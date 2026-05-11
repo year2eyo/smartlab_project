@@ -1,42 +1,31 @@
 """
-SmartLab 커스텀 월드로 Clearpath 시뮬레이션 실행하는 launch 파일.
-시스템 심볼릭 링크 의존 없이 패키지 내부 worlds/ 폴더에서 SDF 로드.
+SmartLab 커스텀 월드로 Clearpath 시뮬레이션 실행.
+IGN_GAZEBO_RESOURCE_PATH에 우리 models 폴더를 명시적으로 추가.
 """
 
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, EnvironmentVariable
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # 패키지 경로
-    pkg_smartlab_bringup = FindPackageShare('smartlab_project_bringup')
-
-    # 월드 파일 경로 (패키지 내부)
-    world_path = PathJoinSubstitution([
-        pkg_smartlab_bringup, 'worlds', 'smart_lab'
-    ])
-
-    # Clearpath simulation.launch.py 경로
-    clearpath_sim_launch = PathJoinSubstitution([
-        FindPackageShare('clearpath_gz'),
-        'launch',
-        'simulation.launch.py'
-    ])
-
-    # 인자 선언
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    setup_path = LaunchConfiguration('setup_path')
-    rviz = LaunchConfiguration('rviz')
-    x = LaunchConfiguration('x')
-    y = LaunchConfiguration('y')
-    yaw = LaunchConfiguration('yaw')
+    # 패키지 위치
+    pkg_smartlab = get_package_share_dir()
 
     return LaunchDescription([
+        # ⭐ 환경변수를 launch 시작 시점에 명시적으로 설정
+        SetEnvironmentVariable(
+            name='IGN_GAZEBO_RESOURCE_PATH',
+            value=[
+                os.environ.get('IGN_GAZEBO_RESOURCE_PATH', ''),
+                ':',
+                os.path.expanduser('~/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models'),
+            ]
+        ),
 
-        # 인자 정의
         DeclareLaunchArgument('use_sim_time', default_value='true'),
         DeclareLaunchArgument('setup_path', default_value='/home/yeari/clearpath/'),
         DeclareLaunchArgument('rviz', default_value='false'),
@@ -44,27 +33,32 @@ def generate_launch_description():
         DeclareLaunchArgument('y', default_value='0.0'),
         DeclareLaunchArgument('yaw', default_value='0.0'),
 
-        # GZ_SIM_RESOURCE_PATH에 우리 worlds/ 추가
-        SetEnvironmentVariable(
-            name='IGN_GAZEBO_RESOURCE_PATH',
-            value=[
-                PathJoinSubstitution([pkg_smartlab_bringup, 'worlds']),
-                ':',
-                PathJoinSubstitution([pkg_smartlab_bringup, 'models']),
-            ]
-        ),
-
-        # Clearpath 시뮬레이션 launch 포함, world 인자에 절대경로 전달
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([clearpath_sim_launch]),
+            PythonLaunchDescriptionSource([
+                PathJoinSubstitution([
+                    FindPackageShare('clearpath_gz'),
+                    'launch',
+                    'simulation.launch.py'
+                ])
+            ]),
             launch_arguments={
-                'world': world_path,
-                'setup_path': setup_path,
-                'rviz': rviz,
-                'use_sim_time': use_sim_time,
-                'x': x,
-                'y': y,
-                'yaw': yaw,
+                'world': PathJoinSubstitution([
+                    FindPackageShare('smartlab_project_bringup'),
+                    'worlds',
+                    'smart_lab'
+                ]),
+                'setup_path': LaunchConfiguration('setup_path'),
+                'rviz': LaunchConfiguration('rviz'),
+                'use_sim_time': LaunchConfiguration('use_sim_time'),
+                'x': LaunchConfiguration('x'),
+                'y': LaunchConfiguration('y'),
+                'yaw': LaunchConfiguration('yaw'),
             }.items()
         ),
     ])
+
+
+def get_package_share_dir():
+    """헬퍼"""
+    from ament_index_python.packages import get_package_share_directory
+    return get_package_share_directory('smartlab_project_bringup')

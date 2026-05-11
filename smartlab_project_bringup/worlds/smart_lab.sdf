@@ -1,166 +1,234 @@
 <?xml version="1.0" ?>
-<sdf version="1.9">
-  <world name="smart_lab">
+<sdf version='1.9'>
+  <world name='smart_lab'>
 
-    <!-- ==================================================== -->
-    <!-- Fortress 시스템 플러그인                              -->
-    <!-- ==================================================== -->
-    <plugin filename="ignition-gazebo-physics-system"
-            name="ignition::gazebo::systems::Physics"/>
-    <plugin filename="ignition-gazebo-user-commands-system"
-            name="ignition::gazebo::systems::UserCommands"/>
-    <plugin filename="ignition-gazebo-scene-broadcaster-system"
-            name="ignition::gazebo::systems::SceneBroadcaster"/>
-    <plugin filename="ignition-gazebo-sensors-system"
-            name="ignition::gazebo::systems::Sensors">
+    <plugin name='ignition::gazebo::systems::Physics' filename='ignition-gazebo-physics-system'/>
+    <plugin name='ignition::gazebo::systems::UserCommands' filename='ignition-gazebo-user-commands-system'/>
+    <plugin name='ignition::gazebo::systems::SceneBroadcaster' filename='ignition-gazebo-scene-broadcaster-system'/>
+    <plugin name='ignition::gazebo::systems::Sensors' filename='ignition-gazebo-sensors-system'>
       <render_engine>ogre2</render_engine>
     </plugin>
-    <plugin filename="ignition-gazebo-imu-system"
-            name="ignition::gazebo::systems::Imu"/>
+    <plugin name='ignition::gazebo::systems::Imu' filename='ignition-gazebo-imu-system'/>
 
-    <!-- 물리 -->
-    <physics name="1ms" type="ignored">
+    <physics name='1ms' type='ignored'>
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
+      <real_time_factor>1</real_time_factor>
     </physics>
     <gravity>0 0 -9.8</gravity>
 
-    <!-- 조명 -->
-    <light name="sun" type="directional">
-      <cast_shadows>true</cast_shadows>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>true</shadows>
+    </scene>
+
+    <light name='sun' type='directional'>
       <pose>0 0 10 0 0 0</pose>
-      <diffuse>1.0 1.0 1.0 1</diffuse>
+      <cast_shadows>true</cast_shadows>
+      <direction>-0.5 0.1 -0.9</direction>
+      <diffuse>1 1 1 1</diffuse>
       <specular>0.5 0.5 0.5 1</specular>
       <attenuation>
         <range>1000</range>
-        <constant>0.9</constant>
         <linear>0.01</linear>
+        <constant>0.9</constant>
         <quadratic>0.001</quadratic>
       </attenuation>
-      <direction>-0.5 0.1 -0.9</direction>
     </light>
 
-    <!-- 바닥 (방보다 넉넉하게 30x30) -->
-    <model name="ground_plane">
+    <model name='ground_plane'>
       <static>true</static>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>30 30</size>
-            </plane>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>30 30</size>
-            </plane>
-          </geometry>
-          <material>
-            <ambient>0.7 0.7 0.7 1</ambient>
-            <diffuse>0.7 0.7 0.7 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
+      <link name='link'>
+        <collision name='c'><geometry><plane><normal>0 0 1</normal><size>30 30</size></plane></geometry></collision>
+        <visual name='v'>
+          <geometry><plane><normal>0 0 1</normal><size>30 30</size></plane></geometry>
+          <material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.7 0.7 0.7 1</diffuse></material>
         </visual>
       </link>
     </model>
 
-    <!-- ==================================================== -->
-    <!-- 10m × 7m 방 (높이 2m)                                 -->
-    <!-- ==================================================== -->
-
-    <!-- 서쪽 벽 (X = -5.0, 길이 7m) -->
-    <model name="wall_west">
-      <static>true</static>
-      <pose>-5.0 0 1 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>0.1 7 2</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>0.1 7 2</size></box>
-          </geometry>
-          <material>
-            <ambient>0.95 0.92 0.85 1</ambient>
-            <diffuse>0.95 0.92 0.85 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
+    <model name='wall_west'>
+      <static>true</static><pose>-5 0 1 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>0.1 7 2</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>0.1 7 2</size></box></geometry>
+          <material><ambient>0.95 0.92 0.85 1</ambient><diffuse>0.95 0.92 0.85 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='wall_east'>
+      <static>true</static><pose>5 0 1 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>0.1 7 2</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>0.1 7 2</size></box></geometry>
+          <material><ambient>0.95 0.92 0.85 1</ambient><diffuse>0.95 0.92 0.85 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='wall_south'>
+      <static>true</static><pose>0 -3.5 1 0 0 1.5707</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>0.1 10 2</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>0.1 10 2</size></box></geometry>
+          <material><ambient>0.95 0.92 0.85 1</ambient><diffuse>0.95 0.92 0.85 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='wall_north'>
+      <static>true</static><pose>0 3.5 1 0 0 1.5707</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>0.1 10 2</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>0.1 10 2</size></box></geometry>
+          <material><ambient>0.95 0.92 0.85 1</ambient><diffuse>0.95 0.92 0.85 1</diffuse></material></visual>
       </link>
     </model>
 
-    <!-- 동쪽 벽 (X = +5.0, 길이 7m) -->
-    <model name="wall_east">
-      <static>true</static>
-      <pose>5.0 0 1 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>0.1 7 2</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>0.1 7 2</size></box>
-          </geometry>
-          <material>
-            <ambient>0.95 0.92 0.85 1</ambient>
-            <diffuse>0.95 0.92 0.85 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
-          </material>
-        </visual>
+    <model name='docking_box_0'>
+      <static>true</static><pose>-2.47 -2.82 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>1 1 1</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.3 0.2 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='docking_box_1'>
+      <static>true</static><pose>0.72 -2.88 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>1 1 1</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.3 0.2 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='docking_box_2'>
+      <static>true</static><pose>3.70 -2.74 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>1 1 1</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.3 0.2 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='docking_box_3'>
+      <static>true</static><pose>-2.51 2.85 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>1 1 1</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.3 0.2 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material></visual>
+      </link>
+    </model>
+    <model name='docking_box_4'>
+      <static>true</static><pose>2.15 2.93 0.5 0 0 0</pose>
+      <link name='link'>
+        <collision name='c'><geometry><box><size>1 1 1</size></box></geometry></collision>
+        <visual name='v'><geometry><box><size>1 1 1</size></box></geometry>
+          <material><ambient>0.4 0.3 0.2 1</ambient><diffuse>0.6 0.4 0.3 1</diffuse></material></visual>
       </link>
     </model>
 
-    <!-- 남쪽 벽 (Y = -3.5, 길이 10m, 90° 회전) -->
-    <model name="wall_south">
+    <!-- ===== ArUco 마커 5개 (인라인 + 절대경로 텍스처) ===== -->
+    <model name='aruco_marker_0'>
       <static>true</static>
-      <pose>0 -3.5 1 0 0 1.5707</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>0.1 10 2</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>0.1 10 2</size></box>
-          </geometry>
+      <pose>-2.47 -2.31 0.5 0 0 3.1415</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
           <material>
-            <ambient>0.95 0.92 0.85 1</ambient>
-            <diffuse>0.95 0.92 0.85 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>/home/yeari/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models/aruco_marker_0/materials/textures/aruco_0.png</albedo_map>
+              <metalness>0.0</metalness>
+              <roughness>1.0</roughness>
+            </metal></pbr>
           </material>
         </visual>
+        <collision name='collision'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+        </collision>
       </link>
     </model>
 
-    <!-- 북쪽 벽 (Y = +3.5, 길이 10m, 90° 회전) -->
-    <model name="wall_north">
+    <model name='aruco_marker_1'>
       <static>true</static>
-      <pose>0 3.5 1 0 0 1.5707</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box><size>0.1 10 2</size></box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box><size>0.1 10 2</size></box>
-          </geometry>
+      <pose>0.72 -2.37 0.5 0 0 3.1415</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
           <material>
-            <ambient>0.95 0.92 0.85 1</ambient>
-            <diffuse>0.95 0.92 0.85 1</diffuse>
-            <specular>0.1 0.1 0.1 1</specular>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>/home/yeari/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models/aruco_marker_1/materials/textures/aruco_1.png</albedo_map>
+              <metalness>0.0</metalness>
+              <roughness>1.0</roughness>
+            </metal></pbr>
           </material>
         </visual>
+        <collision name='collision'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name='aruco_marker_2'>
+      <static>true</static>
+      <pose>3.19 -2.74 0.5 0 0 -1.5707</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>/home/yeari/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models/aruco_marker_2/materials/textures/aruco_2.png</albedo_map>
+              <metalness>0.0</metalness>
+              <roughness>1.0</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <collision name='collision'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name='aruco_marker_3'>
+      <static>true</static>
+      <pose>-2.51 2.34 0.5 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>/home/yeari/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models/aruco_marker_3/materials/textures/aruco_3.png</albedo_map>
+              <metalness>0.0</metalness>
+              <roughness>1.0</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <collision name='collision'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+        </collision>
+      </link>
+    </model>
+
+    <model name='aruco_marker_4'>
+      <static>true</static>
+      <pose>2.15 2.42 0.5 0 0 0</pose>
+      <link name='link'>
+        <visual name='visual'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+          <material>
+            <ambient>1 1 1 1</ambient>
+            <diffuse>1 1 1 1</diffuse>
+            <pbr><metal>
+              <albedo_map>/home/yeari/jackal_ws/install/smartlab_project_bringup/share/smartlab_project_bringup/models/aruco_marker_4/materials/textures/aruco_4.png</albedo_map>
+              <metalness>0.0</metalness>
+              <roughness>1.0</roughness>
+            </metal></pbr>
+          </material>
+        </visual>
+        <collision name='collision'>
+          <geometry><box><size>0.2 0.005 0.2</size></box></geometry>
+        </collision>
       </link>
     </model>
 
