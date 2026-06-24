@@ -182,7 +182,7 @@ smartlab_project_bringup/models/aruco_marker_4/materials/textures/aruco_4.png
 
 **Terminal 1 — Gazebo:**
 ```bash
-ros2 launch clearpath_gz simulation.launch.py
+ros2 launch smartlab_sim.launch.py
 ```
 → Gazebo 좌측 하단 ▶ play 버튼 클릭
 
